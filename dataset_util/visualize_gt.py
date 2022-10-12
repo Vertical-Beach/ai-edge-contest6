@@ -127,6 +127,6 @@ if __name__ == "__main__":
     elif args.mode == "3d":
         visualize_3d_gt(args.train_or_val, args.dataset_dir, args.out_dir)
     elif args.mode == "both":
-        # visualize_2d_gt(args.train_or_val, args.dataset_dir, args.out_dir)
-        # visualize_3d_gt(args.train_or_val, args.dataset_dir, args.out_dir)
+        visualize_2d_gt(args.train_or_val, args.dataset_dir, args.out_dir)
+        visualize_3d_gt(args.train_or_val, args.dataset_dir, args.out_dir)
         concat_2d_and_3d(args.train_or_val, args.dataset_dir, args.out_dir)
