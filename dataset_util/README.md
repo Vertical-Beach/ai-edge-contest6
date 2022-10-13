@@ -98,10 +98,6 @@ python visualize_gt.py --out_dir res --train_or_val val --dataset_dir /media/lp6
 
 ## 推論結果の可視化
 
-### カメラ画像への可視化(2D)
-
-### 鳥瞰図への可視化(3D)
-
 ## Open3Dでの可視化
 
 
