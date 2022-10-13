@@ -1,5 +1,5 @@
 # visualize_util
-<img src="https://github.com/Vertical-Beach/ai-edge-contest6/blob/visualize/dataset_util/data/img1.png?raw=true" width="50%">
+<img src="https://github.com/Vertical-Beach/ai-edge-contest6/blob/visualize/visualize_util/data/img1.png?raw=true" width="50%">
 
 ## センサ情報の生成
 mmdetection3dの`create_data.py`を使用して`nuscenes_infos_train.pkl, nuscenes_infos_val.pkl`を生成する。  
@@ -118,7 +118,7 @@ python visualize_pred.py --out_dir pred --train_or_val val --dataset_dir /media/
 ```
 
 ## Open3DでのGUI可視化
-<img src="https://github.com/Vertical-Beach/ai-edge-contest6/blob/visualize/dataset_util/data/img2.png?raw=true" width="50%">
+<img src="https://github.com/Vertical-Beach/ai-edge-contest6/blob/visualize/visualize_util/data/img2.png?raw=true" width="50%">
 open3dでマウスでグリグリカメラを回して可視化したい場合に使用する。  
 `--lidar_file`に指定した点群ファイル1つを表示する。
 ### アノテーションデータの可視化
