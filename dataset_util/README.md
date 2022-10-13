@@ -1,3 +1,5 @@
+# visualize_util
+<img src="https://github.com/Vertical-Beach/ai-edge-contest6/blob/visualize/dataset_util/data/img1.png?raw=true" width="50%">
 
 ## センサ情報の生成
 mmdetection3dの`create_data.py`を使用して`nuscenes_infos_train.pkl, nuscenes_infos_val.pkl`を生成する。  
@@ -97,10 +99,41 @@ python visualize_gt.py --out_dir res --train_or_val val --dataset_dir /media/lp6
 
 
 ## 推論結果の可視化
+推論結果のjsonを読み込んで可視化する。推論した点群データがtrain/valのどちらに含まれるかは現状指定する必要がある。
+```
+usage: visualize_pred.py [-h] --out_dir OUT_DIR --train_or_val {train,val} --dataset_dir DATASET_DIR --result_json RESULT_JSON --mode {2d,3d,both} [--score_thresh SCORE_THRESH]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --out_dir OUT_DIR
+  --train_or_val {train,val}
+  --dataset_dir DATASET_DIR
+  --result_json RESULT_JSON
+  --mode {2d,3d,both}
+  --score_thresh SCORE_THRESH
+```
+
 ```
 python visualize_pred.py --out_dir pred --train_or_val val --dataset_dir /media/lp6m/HDD6TB/aiedge6/materials/train/3d_labels/ --result_json ./data/result.json --mode both
 ```
 
-## Open3Dでの可視化
+## Open3DでのGUI可視化
+<img src="https://github.com/Vertical-Beach/ai-edge-contest6/blob/visualize/dataset_util/data/img2.png?raw=true" width="50%">
+open3dでマウスでグリグリカメラを回して可視化したい場合に使用する。  
+`--lidar_file`に指定した点群ファイル1つを表示する。
+### アノテーションデータの可視化
+```
+python visualize_gui.py --train_or_val val --dataset_dir /media/lp6m/HDD6TB/aiedge6/materials/train/3d_labels/ --mode gt --lidar_file em5VCQcE1fwFkTHI4wZ0Tm5y_0.bin
+```
 
+### 推論結果の可視化
+指定した点群ファイルに対応する推論結果が`--result_json`で指定される推論結果に含まれている必要がある。
+```
+python visualize_gui.py --train_or_val val --dataset_dir /media/lp6m/HDD6TB/aiedge6/materials/train/3d_labels/ --mode pred --lidar_file em5VCQcE1fwFkTHI4wZ0Tm5y_0.bin --result_json ./data/result.json
+```
 
+## 注意点
+bboxの座標、サイズ、向きの情報は以下の7つの値で表される。  
+`(center_x, center_y, center_z, size_x, size_y, size_z, y-axis-rotation)`  
+DPUの推論結果（正確にはVitis-AI-Libraryのpotprocess）はなぜか、
+`(center_x, center_y, min_z, size_x, size_y, size_z, y-axis-rotation)`のようにz座標だけ**min_z**になっているので可視化前に変換する必要がある。実装は`visualize_pred.py::transform_bbox()`にある。
