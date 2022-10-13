@@ -19,7 +19,7 @@ def visualize_2d_gt(train_or_val: str, dataset_dir: str, out_basedir: str):
         cam_info, boxes_3d, labels_3d, scores_3d, points = process_info(
             d, dataset_dir)
         img = visualize_2d.draw_3d_boxes_on_image(
-            boxes_3d, scores_3d, labels_3d, cam_info, gt_mode=True, score_thresh=0)
+            boxes_3d, scores_3d, labels_3d, cam_info, score_thresh=0)
 
         save_img_name = os.path.basename(d["lidar_path"])[:-4] + ".png"
         save_img_path = os.path.join(out_dir, save_img_name)

@@ -97,6 +97,9 @@ python visualize_gt.py --out_dir res --train_or_val val --dataset_dir /media/lp6
 
 
 ## 推論結果の可視化
+```
+python visualize_pred.py --out_dir pred --train_or_val val --dataset_dir /media/lp6m/HDD6TB/aiedge6/materials/train/3d_labels/ --result_json ./data/result.json --mode both
+```
 
 ## Open3Dでの可視化
 

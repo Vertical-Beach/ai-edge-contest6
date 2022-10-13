@@ -30,31 +30,19 @@ def isAnyBack(corners, forward_axis):
     return any(corners[:, forward_axis] < 0)
 
 
-def generate8Corners(x, y, z, dx, dy, dz, rz, gt_mode):
+def generate8Corners(x, y, z, dx, dy, dz, rz):
     size = np.array([dx, dy, dz])
     center = np.array([x, y, z])
-    if gt_mode:
-        offset = np.array([
-            [1/2,    1/2,  1/2],
-            [-1/2,    1/2,  1/2],
-            [-1/2,   -1/2,  1/2],
-            [1/2,   -1/2,  1/2],
-            [1/2,    1/2,  -1/2],
-            [-1/2,    1/2,  -1/2],
-            [-1/2,   -1/2,  -1/2],
-            [1/2,   -1/2,  -1/2]
-        ])
-    else:
-        offset = np.array([
-            [1/2,    1/2,  0],
-            [-1/2,    1/2,  0],
-            [-1/2,   -1/2,  0],
-            [1/2,   -1/2,  0],
-            [1/2,    1/2,  1],
-            [-1/2,    1/2,  1],
-            [-1/2,   -1/2,  1],
-            [1/2,   -1/2,  1]
-        ])
+    offset = np.array([
+        [1/2,    1/2,  1/2],
+        [-1/2,    1/2,  1/2],
+        [-1/2,   -1/2,  1/2],
+        [1/2,   -1/2,  1/2],
+        [1/2,    1/2,  -1/2],
+        [-1/2,    1/2,  -1/2],
+        [-1/2,   -1/2,  -1/2],
+        [1/2,   -1/2,  -1/2]
+    ])
     offset *= np.tile(size, (8, 1))
     offset = np.dot(rotz(rz), offset.T).T
     corners = offset + np.tile(center, (8, 1))
@@ -77,14 +65,14 @@ def convert(boxes_3d, scores_3d, labels_3d):
     return objs
 
 
-def draw_proj_box(img, obj, l2c, intrinsic, colormap, gt_mode):
+def draw_proj_box(img, obj, l2c, intrinsic, colormap):
     ''' draw projected 3d bounding boxe on the rgb image of camera
     img: rgb image
     obj: 3d bounding box in the Camera Coordinate for KITTI
     P  : matrix of transformation from the Camera Coordinate to the image plane (P2 * rect)
     '''
     corners = generate8Corners(
-        obj.x, obj.y, obj.z, obj.dx, obj.dy, obj.dz, obj.a, gt_mode)
+        obj.x, obj.y, obj.z, obj.dx, obj.dy, obj.dz, obj.a)
     homo_corners = np.hstack([corners, np.array([1]*8).reshape(-1, 1)])
     corners_on_cam = np.dot(l2c, homo_corners.T).T
 
@@ -134,7 +122,7 @@ def draw_projected_box3d(image, qs, color=(255, 255, 255), thickness=1):
     return image
 
 
-def draw_3d_boxes_on_image(boxes_3d, scores_3d, labels_3d, cam_info, gt_mode=True, score_thresh=0.5):
+def draw_3d_boxes_on_image(boxes_3d, scores_3d, labels_3d, cam_info, score_thresh=0.5):
     img_path = cam_info['data_path']
     c2l = np.eye(4)
     c2l[:3, :3] = cam_info['sensor2lidar_rotation']
@@ -149,5 +137,5 @@ def draw_3d_boxes_on_image(boxes_3d, scores_3d, labels_3d, cam_info, gt_mode=Tru
         if obj.score < score_thresh:
             continue
         rgb_3d_map = draw_proj_box(
-            rgb_3d_map, obj, l2c, intrinsic, COLORMAP, gt_mode)
+            rgb_3d_map, obj, l2c, intrinsic, COLORMAP)
     return rgb_3d_map

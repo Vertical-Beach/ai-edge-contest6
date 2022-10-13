@@ -11,6 +11,14 @@ from util import visualize_2d, visualize_3d
 from util.info_util import load_info, process_info
 
 
+def transform_bbox(bbox):
+    # z coordinate format is different from ground truth format.
+    cx, cy, jimenz, sx, sy, sz, rot = bbox
+    cz = jimenz + sz / 2
+    bbox = np.array([cx, cy, cz, sx, sy, sz, rot])
+    return bbox
+
+
 def load_pred_json(json_path: str, score_thresh: float):
     preddict = {}
     jobj = json.loads(open(json_path).read())
@@ -22,7 +30,7 @@ def load_pred_json(json_path: str, score_thresh: float):
         for pred in obj["pred"]:
             if pred["score"] < score_thresh:
                 continue
-            boxes.append(pred["box"][:7])
+            boxes.append(transform_bbox(pred["box"][:7]))
             scores.append(pred["score"])
             labels.append(pred["label"])
         preddict[lidar_file] = (
@@ -47,7 +55,7 @@ def visualize_2d_pred(train_or_val: str, dataset_dir: str, out_basedir: str, res
         boxes_3d, scores_3d, labels_3d = preddict[lidar_file]
 
         img = visualize_2d.draw_3d_boxes_on_image(
-            boxes_3d, scores_3d, labels_3d, cam_info, gt_mode=False, score_thresh=0)
+            boxes_3d, scores_3d, labels_3d, cam_info, score_thresh=0)
 
         save_img_name = os.path.basename(d["lidar_path"])[:-4] + ".png"
         save_img_path = os.path.join(out_dir, save_img_name)
