@@ -1,0 +1,10 @@
+--find-links https://download.pytorch.org/whl/torch_stable.html
+torch==1.10.1+cu113
+torchvision==0.11.2
+opencv-python
+/opt/ml/signate_docker/mmcv_full-1.1.5-cp39-cp39-linux_x86_64.whl
+mmcv-full==1.1.5
+mmdet==2.5.0
+numba==0.53.0
+networkx
+/opt/ml/signate_docker/mmdet3d-0.6.1-cp39-cp39-linux_x86_64.whl
