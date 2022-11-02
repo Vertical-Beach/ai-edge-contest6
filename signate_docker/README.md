@@ -29,6 +29,13 @@ pip install -r requirements.txt
 cd src
 python local_test.py
 ```
+出力された`results.json`は本リポジトリ内の`visualize_util`で可視化できる。  
+
+```sh
+python visualize_pred.py --out_dir mmdet_pred --train_or_val train --dataset_dir /media/lp6m/HDD6TB/aiedge6/materials/train/3d_labels/ --result_json ./results_mmdetection.json --mode both --score_thresh 0.4
+python visualize_gui.py --train_or_val train --dataset_dir /media/lp6m/HDD6TB/aiedge6/materials/train/3d_labels/ --mode pred --lidar_file 0TyydnMdYWU1YD7nw5uCNGs8_1.bin --result_json ./results_mmdetection.json  --score_thresh 0.4
+```
+
 
 
 # requirements.txtについて
