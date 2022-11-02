@@ -2,6 +2,10 @@
 SIGNATE評価投稿用ディレクトリ  
 [`signatelab/runtime-gpu`](https://github.com/signatelab/runtime-gpu)で動かすための環境
 
+# DL
+[Google Drive](https://drive.google.com/drive/folders/1ld6qmUlL__UX4ezXUoXgNeO8gEdyToie?usp=sharing)からwhlとpthをダウンロードする。  
+whlは`signate_docker/`直下、pthは`signate_docker/model/`下に配置する。  
+
 
 # ローカルテスト用
 
