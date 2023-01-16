@@ -2,6 +2,7 @@
 #include <google/protobuf/text_format.h>
 
 #include <cmath>
+#include <chrono>
 #include <iostream>
 #include <numeric>
 #include <opencv2/core.hpp>
@@ -20,9 +21,8 @@
 using namespace std;
 
 
-vector<float> loadPoints(){
+vector<float> loadPoints(string points_file_name){
     std::vector<float> points;
-    string points_file_name = "./signate.bin";
     struct stat file_stat;
     if (stat(points_file_name.c_str(), &file_stat) != 0) {
         std::cerr << "file:" << points_file_name << " state error!" << std::endl;
@@ -31,10 +31,6 @@ vector<float> loadPoints(){
     auto file_size = file_stat.st_size;
     points.resize(file_size / 4);
     CHECK(std::ifstream(points_file_name).read(reinterpret_cast<char *>(points.data()), file_size).good());
-    for(int i = 0; i < 100; i++) {
-        cout << points[i] << " ";
-        if (i % 5 == 4) cout << endl;
-    }
     return points;
 }
 
@@ -135,23 +131,39 @@ class PointPillarsRunner{
 };
 
 
-int main(){
-    cout << "Hello" << endl;
-    vector<float> points = loadPoints();
+int main(int argc, char *argv[]){
+    if (argc != 3) {
+        cerr << "usage: ./test <.bin> <logfile>" << endl;
+    }
+    #ifdef RISCV
+    riscv_init();
+    #endif
+    string pcdfile = argv[1];
+    string logfile = argv[2];
+    vector<float> points = loadPoints(pcdfile);
     auto runner = PointPillarsRunner("net0.xmodel", "net1.xmodel");
+    std::chrono::system_clock::time_point  t1, t2;
+    t1 = std::chrono::system_clock::now();
     auto ret = runner.Run(points);
+    t2 = std::chrono::system_clock::now();
+    double elapsed1 = (double)std::chrono::duration_cast<std::chrono::milliseconds>(t2-t1).count();
+
+    cout << "predict: " << elapsed1 << "[ms]" << endl;
+    ofstream logstream(logfile);
     for (auto c = 0u; c < 10; ++c) {
       for (auto i = 0u; i < ret.bboxes.size(); ++i) {
         if (ret.bboxes[i].label != c) {
           continue;
         }
-        std::cout << "label: " << ret.bboxes[i].label;
-        std::cout << " bbox: ";
+        logstream << "label: " << ret.bboxes[i].label;
+        logstream << " bbox: ";
         for (auto j = 0u; j < ret.bboxes[i].bbox.size(); ++j) {
-          std::cout << ret.bboxes[i].bbox[j] << " ";
+          logstream << ret.bboxes[i].bbox[j] << " ";
         }
-        std::cout << "score: " << ret.bboxes[i].score;
-        std::cout << std::endl;
+        logstream << "score: " << ret.bboxes[i].score;
+        logstream << endl;
       }
     }
+    logstream.close();
+    cout << "predicted log is written in " << logfile << endl;
 }

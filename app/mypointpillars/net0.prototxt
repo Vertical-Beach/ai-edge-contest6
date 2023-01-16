@@ -1,0 +1,137 @@
+model {
+  name: "net0"
+  kernel {
+     name: "net0"
+     mean: 0.0
+     mean: 0.0
+     mean: -1
+     mean: 127.5
+     mean: 0.275
+     scale: 0.02
+     scale: 0.02
+     scale: 0.25
+     scale: 0.0078
+     scale: 3.6364
+  }
+  model_type : POINTPILLARS_NUS
+  pointpillars_nus_param : {
+    point_cloud_range: -50 # x-lbound
+    point_cloud_range: -50 # y-lbound
+    point_cloud_range: -3 # z-lbound
+    point_cloud_range: 50 # x-hbound
+    point_cloud_range: 50 # y-hbound
+    point_cloud_range: 3 # z-hbound
+    in_channels: 64
+    max_points_num: 64
+    max_voxels_num: 40000
+    num_classes: 10
+    nms_pre: 1000
+    nms_thresh: 0.2
+    max_num: 500
+    score_thresh: 0.3
+    featmap_size: 200
+    featmap_size: 200
+    score_layer_name : "conv_cls"
+    bbox_layer_name : "conv_reg"
+    dir_layer_name : "conv_dir_cls"
+    anchor_info : {
+      ranges: {
+        single_range: -49.6
+        single_range: -49.6
+        single_range: -1.80032795
+        single_range: 49.6
+        single_range: 49.6
+        single_range: -1.80032795
+      }
+      ranges: {
+        single_range: -49.6
+        single_range: -49.6
+        single_range: -1.74440365
+        single_range: 49.6
+        single_range: 49.6
+        single_range: -1.74440365
+      }
+      ranges: {
+        single_range: -49.6
+        single_range: -49.6
+        single_range: -1.68526504
+        single_range: 49.6
+        single_range: 49.6
+        single_range: -1.68526504
+      }
+      ranges: {
+        single_range: -49.6
+        single_range: -49.6
+        single_range: -1.67339111
+        single_range: 49.6
+        single_range: 49.6
+        single_range: -1.67339111
+      }
+      ranges: {
+        single_range: -49.6
+        single_range: -49.6
+        single_range: -1.61785072
+        single_range: 49.6
+        single_range: 49.6
+        single_range: -1.61785072
+      }
+      ranges: {
+        single_range: -49.6
+        single_range: -49.6
+        single_range: -1.80984986
+        single_range: 49.6
+        single_range: 49.6
+        single_range: -1.80984986
+      }
+      ranges: {
+        single_range: -49.6
+        single_range: -49.6
+        single_range: -1.763965
+        single_range: 49.6
+        single_range: 49.6
+        single_range: -1.763965
+      }
+      sizes: {
+        single_size: 1.95017717
+        single_size: 4.60718145
+        single_size: 1.72270761
+      }
+      sizes: {
+        single_size: 2.4560939
+        single_size: 6.73778078
+        single_size: 2.73004906
+      }
+      sizes: {
+        single_size: 2.87427237
+        single_size: 12.01320693
+        single_size: 3.81509561
+      }
+      sizes: {
+        single_size: 0.60058911
+        single_size: 1.68452161
+        single_size: 1.27192197
+      }
+      sizes: {
+        single_size: 0.66344886
+        single_size: 0.7256437
+        single_size: 1.75748069
+      }
+      sizes: {
+        single_size: 0.39694519
+        single_size: 0.40359262
+        single_size: 1.06232151
+      }
+      sizes: {
+        single_size: 2.49008838
+        single_size: 0.48578221
+        single_size: 0.98297065
+      }
+      custom_value: 0.0
+      custom_value: 0.0
+      rotations: 0.0
+      rotations: 1.57
+      align_corner: false
+      scale: 1.0
+    }
+  }
+}

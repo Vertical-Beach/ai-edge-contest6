@@ -23,7 +23,4 @@ fi
 
 #-lvitis_ai_library-configurable_dpu_task
 CXX=${CXX:-g++}
-for file in $(ls *.cpp); do
-	filename=${file%.*}
-	$CXX -std=c++17 -O2 -I. -o ${filename} ${file} -lprotobuf -lvitis_ai_library-pointpillars_nuscenes -lvitis_ai_library-dpu_task -lvitis_ai_library-xnnpp -lvitis_ai_library-model_config -lvitis_ai_library-math -lvart-util -lxir -pthread -ljson-c -lglog ${OPENCV_FLAGS} -lopencv_core -lopencv_videoio -lopencv_imgproc -lopencv_imgcodecs -lopencv_highgui
-done
+$CXX -std=c++17 -O2 -I. -o test test.cpp riscv_imm.c -lprotobuf -lvitis_ai_library-pointpillars_nuscenes -lvitis_ai_library-dpu_task -lvitis_ai_library-xnnpp -lvitis_ai_library-model_config -lvitis_ai_library-math -lvart-util -lxir -pthread -ljson-c -lglog ${OPENCV_FLAGS} -lopencv_core -lopencv_videoio -lopencv_imgproc -lopencv_imgcodecs -lopencv_highgui

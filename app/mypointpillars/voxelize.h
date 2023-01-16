@@ -5,7 +5,10 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-
+#include <chrono>
+#ifdef RISCV
+#include "riscv.h"
+#endif
 using namespace std;
 
 void dynamic_voxelize_kernel(const vector<float> &points,
@@ -20,12 +23,17 @@ void dynamic_voxelize_kernel(const vector<float> &points,
   int coor[NDim];
   int c;
 
+  #ifdef RISCV
+  std::chrono::system_clock::time_point  t1, t2;
+  t1 = std::chrono::system_clock::now();
+  riscv_run(points, coors, num_points, num_features);
+  t2 = std::chrono::system_clock::now();
+  double elapsed1 = (double)std::chrono::duration_cast<std::chrono::milliseconds>(t2-t1).count();
+  cout << "riscv: " << elapsed1 << "[ms]" << endl;
+  #else
   for (int i = 0; i < num_points; ++i) {
     failed = false;
     for (int j = 0; j < NDim; ++j) {
-      // c = floor((points[i][j] - coors_range[j]) / voxel_size[j]);
-       //LOG_IF(ERROR, ENV_PARAM(DEBUG_VOXELIZE))
-       //      << "i: " << i << ", j: " << j;
       c = std::floor((points[i * num_features + j] - coors_range[j]) / voxel_size[j]);
       // necessary to rm points out of range
       if ((c < 0 || c >= grid_size[j])) {
@@ -44,6 +52,7 @@ void dynamic_voxelize_kernel(const vector<float> &points,
         coors[i * 3 + k] = coor[k];
     }
   }
+  #endif
 
   return;
 }

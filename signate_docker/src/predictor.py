@@ -73,7 +73,7 @@ class ScoringService(object):
         boxes_3d = boxes_3d[:, :2]
         # category filter
         CAR = 0
-        PEDESTRIAN = 7
+        PEDESTRIAN = 4
         target_class_flg = ((labels_3d == CAR) | (labels_3d == PEDESTRIAN))
         boxes_3d = boxes_3d[target_class_flg]
         scores_3d = scores_3d[target_class_flg]
