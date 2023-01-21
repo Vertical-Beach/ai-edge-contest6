@@ -2,7 +2,7 @@
 
 ## 準備するもの
 - Xilinx KV260
-  - 電源ケーブル・MicroUSBケーブル
+  - 電源ケーブル・MicroUSBケーブル・LANケーブル
 - 16GB以上のMicroSDカード
 
 ## SDイメージの書き込み・起動確認
@@ -15,12 +15,29 @@ sudo screen /dev/ttyUSB1 115200
 起動ログを確認する。この時点で起動がうまくいっていない場合、KV260のファームウェアを更新する必要がある。[Xilinx公式Wiki](https://xilinx-wiki.atlassian.net/wiki/spaces/A/pages/1641152513/Kria+K26+SOM#Boot-Firmware-Updates)より`BOOT_xilinx-k26-starterkit-v2022.1-07250622_update2.BIN`に更新することでブートが正常にできることを確認している。  
 <img src="./image/bootlog.png" width=50%>
 
-初回起動時はパスワードの設定を求められるので適宜設定する。
+初回起動時はパスワードの設定を求められるので適宜設定する。ifconfigでKV260に割り当てられたIPアドレスを確認しておき、以降はssh接続で作業を行う。
+
+## ビルドツールのインストール
+KV260上にビルドツールをインストールしておく。
+```sh
+sudo dnf install -y cmake g++ g++-symlinks gcc-symlinks binutils pkgconfig git
+```
+
+## アプリケーション・FPGAイメージのコピー
+`sources.tar.gz`に含まれるアプリケーションおよびFPGAイメージをホストPCからKV260上に転送する。  
+Githubからコピーする場合はFPGAイメージは`riscv_and_dpu2`に、アプリケーションは`app`に入っている。  
+```sh
+tar xvf source.tar.gz
+scp -r source petalinux@192.168.xx.xx:~/
+```
+以降の作業はKV260上で行う。
 
 ## FPGAイメージのロード
+
 KV260では`xmutil`コマンドを使用して`/lib/firmware/xilinx/`以下に配置したFPGAのビットストリーム・デバイスツリーをロードすることができる。起動時にはベースプロジェクトに含まれている`xilinx-kv260-starterkit-20221`のFPGAビットストリームが書き込まれているが、これをアンロードし、コンテストで使用するFPGAビットストリームに書き換える。
 
 ```sh
+sudo cp ~/source/hardware/riscv_and_dpu2 /lib/firmware/xilinx/
 sudo xmutil listapps
 sudo xmutil unloadapp
 sudo xmutil loadapp riscv_and_dpu2
@@ -29,15 +46,16 @@ sudo xmutil loadapp riscv_and_dpu2
 ## RISCVの実行確認
 RISCV単体での実行を確認することができる。簡単な浮動小数点数の足し算をRISCV上で実行するテストプログラムを実行する。
 ```
-cd test_riscv
+cd source/app/test_riscv
 g++ test.cpp
 sudo ./a.out
 ```
+<img src="./image/test_riscv.png" width=50%>
 
 ## 点群データ推論アプリケーションの実行
-採取成果物である点群データ推論アプリケーションの実行を行う。
+最終成果物である点群データ推論アプリケーションの実行を行う。
 ```sh
-cd mypointpillars
+cd source/app/mypointpillars
 ```
 
 まず最初に`/run/media/mmcblk0p1/dpu.xclbin`にビットストリームイメージをコピーする必要がある。
