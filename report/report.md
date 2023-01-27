@@ -51,9 +51,9 @@ Convolution処理としては`Pillar Feature Net`と`BackBone+Detection Head`の
 
 ブロックデザイン左下にはVexRiscvコアが存在し、右下にVexRiscvが使用する命令・データブロックRAMを配置している。VexRiscvの命令バス・データバスはAXIプロトコルを使用しており、AXI Smartconnectを経由してPSコアと接続することでARMコア・VexRiscvコアの両者から命令メモリ・データメモリにアクセスできるようになっている。  
 
-Xilinx DPUのリソース使用率が高いため、RISCVコアの命令・データメモリサイズはそれぞれ32KByteが実装できる上限となった。半分の16KByteをARMコアとのデータ入出力に使用している。16KByteには32bitのデータを4096個格納することができるが、1回の推論の入力の点群データは平均で2.5MByteほどあるため、点群データを処理するには1回の推論につき350回ほどRISCVコアを実行する必要がある構成になってしまった。  
+Xilinx DPUのリソース使用率が高いため、RISCVコアの命令・データメモリサイズはそれぞれ32KByteが実装できる上限となった。データメモリサイズ32KByteのうち、半分の16KByteをARMコアとのデータ入出力に使用している。16KByteには32bitのデータを4096個格納することができるが、1回の推論の入力の点群データは平均で2.5MByteほどあるため、点群データを処理するには1回の推論につき350回ほどRISCVコアを実行する必要がある構成になってしまった。  
 
-命令メモリ・データメモリにBRAMを使用するかわりにCMA領域を参照させるHW構成についてはトライしたがうまく動作しなかったため最終成果物では採用していない。参考:  
+命令メモリ・データメモリにBRAMを使用するかわりにCMA領域を参照させることでRISCVコアのメモリサイズを大きくすることができるが、うまく動作しなかったため最終成果物では採用していない。参考:  
 [VexRiscvでBRAMのかわりにDRAMを使いたい（失敗）](https://lp6m.hatenablog.com/entry/2023/01/14/000327)
 
 
@@ -61,3 +61,31 @@ Xilinx DPUのリソース使用率が高いため、RISCVコアの命令・デ�
 
 本コンテストの開催期間中、開発をサポートするためのユーティリティおよび、コンテストの枠を超えた開発を行なった。
 ## 学習・推論データの可視化ツール
+可視化ツールを使用してアノテーションデータ・推論結果を可視化することができる。
+詳細については[visualize_util/README.md](https://github.com/Vertical-Beach/ai-edge-contest6/visualize_util)を参照。  
+
+- 俯瞰視点でのbbox描画、前方方向画像へのbbox描画
+```
+python visualize_pred.py --out_dir pred --train_or_val val --dataset_dir /media/lp6m/HDD6TB/aiedge6/materials/train/3d_labels/ --result_json ./data/result.json --mode both
+```
+<img src="./image/img1.png">
+
+- Open3Dを用いたGUIで視点を移動しながら推論結果を確認
+```
+python visualize_gui.py --train_or_val val --dataset_dir /media/lp6m/HDD6TB/aiedge6/materials/train/3d_labels/ --mode pred --lidar_file em5VCQcE1fwFkTHI4wZ0Tm5y_0.bin --result_json ./data/result.json
+```
+<img src="./image/img2.png">
+
+## OSS自動運転ソフトウェアAutowareとの連携
+[Autoware](https://www.autoware.org/)は、ROS（Robot Operating System）をベースとした自動運転システム用OSSである。自己位置推定、物体検出、経路計画、車両制御などの自動運転に必要な機能が含まれている。また、[AWSIM](https://github.com/tier4/AWSIM)はゲームエンジンUnityをベースとした自動運転シミュレーション環境であり、Autowareと連携して自動運転シミュレーションを行うことができる。  
+
+コンテストへの活用・コンテストの成果物の応用ができると考えAutowareを動作させた。  
+AutowareをビルドしてAWSIMと連携し自動運転シミュレーションを動作させた画面を以下に示す。動画は[Twitter上に投稿](https://twitter.com/lp6m1/status/1597744053483077632)した。  
+<img src="./image/autoware.jpg">
+
+AutowareとAWSIMを使用することで、シミュレータからLiDAR点群データを取得することができる。この点群データをdumpしてコンテストの成果物の入力とし、物体検出ができることを確認した。  
+
+### 本コンテストでは実装しきれなかった内容
+Autowareがベースとして採用しているROSでは、ロボットシステムのそれぞれのモジュールをノードとして定義し、ノード間がデータをやりとり(Pub/Sub)することで全体のロボットシステムを構築する。
+開発期間の都合上今回は実装できなかったが、本コンテストでの成果物をROSノード化することで、Autowareのシステムのうち点群物体検出部分をFPGAボード上にオフロードすることもある程度容易に実現できると考えている。
+具体的には、Autowareでは点群物体検出にCenterPointモデルが使用されており、[`lidar_centerpoint`](https://github.com/autowarefoundation/autoware.universe/tree/main/perception/lidar_centerpoint)ノードをKV260上に実装したノードと差し替えればよい。

@@ -6,9 +6,9 @@
 - 16GB以上のMicroSDカード
 
 ## SDイメージの書き込み・起動確認
-`sd.img`を[Balena Etcher](https://www.balena.io/etcher)やddコマンドSDイメージに書き込む。KV260とホストPCをUSBケーブルで接続し、KV260の電源ケーブルを接続する。
+`petalinux-sdimage.wic`を[Balena Etcher](https://www.balena.io/etcher)やddコマンドSDイメージに書き込む。KV260とホストPCをUSBケーブルで接続し、KV260の電源ケーブルを接続する。
 
-電源を投入するとシリアルコンソールで起動ログを確認する。ここではLinuxに入っている`screen`をしようしてシリアルコンソールに接続する。
+電源を投入するとシリアルコンソールで起動ログを確認する。ここではLinuxに入っている`screen`を使用してシリアルコンソールに接続する。
 ```bash
 sudo screen /dev/ttyUSB1 115200
 ```
